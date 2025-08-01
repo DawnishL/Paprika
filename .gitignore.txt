@@ -1,0 +1,39 @@
+# Python
+# ---
+# Ignore virtual environment folders, which are user-specific and large.
+venv/
+env/
+
+# Ignore Python's bytecode cache and compiled files.
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+
+# Large Data, Models & Encoders
+# ---
+# These files are typically too large for a Git repository and should be hosted elsewhere.
+# [cite_start]Your code (`emo & celeb.py`, `Baseline model_w2v2+cnn_0714.ipynb`) references these file types. [cite: 7, 8]
+*.pt
+*.pth
+*.npz
+*.pkl
+
+
+# Datasets
+# ---
+# Raw dataset folders should not be tracked in version control.
+# [cite_start]Your notebooks process data from these sources. [cite: 6, 8]
+/Audio_Speech_Actors_01-24/
+/VOXCELEB/
+/ESC-50-master/
+
+
+# IDE & OS specific files
+# ---
+# Ignore configuration files from common editors and operating systems.
+.idea/
+.vscode/
+.DS_Store
+*.swp

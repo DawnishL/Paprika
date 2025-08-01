@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>VoicEmo</title>
+  <link rel="stylesheet" href="style.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Mono:ital,wght@0,300;0,400;0,500;1,300;1,400;1,500&display=swap" rel="stylesheet">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r121/three.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/vanta@latest/dist/vanta.waves.min.js"></script>
+</head>
+<body>
+  <div id="vanta-bg" style="position:fixed;z-index:0;top:0;left:0;width:100vw;height:100vh;"></div>
+  <div class="main-card">
+    <h2>VoicEmo</h2>
+    <div class="center-desc">
+      Curious about your voice's hidden secrets? <br>
+      Instantly discover your celebrity match, emotions, and more!
+    </div>
+
+    <div class="section-gap">
+      <button type="button" id="recordBtn" class="btn-custom">Start Recording</button>
+      <button type="button" id="stopBtn" class="btn-custom" disabled>Stop Recording</button>
+    </div>
+    <audio id="audioPreview" controls style="display:none;" class="section-gap"></audio>
+
+    <div class="section-gap">
+      <button type="button" id="customFileBtn" class="btn-custom">Select File</button>
+      <input type="file" id="audioFile" accept="audio/*" style="display:none;">
+      <span id="fileName">No file selected</span>
+    </div>
+
+    <div class="section-gap">
+      <button type="button" id="predictSimBtn" class="btn-custom">Predict Celebrity Similarity</button>
+      <button type="button" id="predictEIGBtn" class="btn-custom">Predict Emotion, Intensity & Gender</button>
+    </div>
+    <h3 class="result-title">Results</h3>
+    <div id="result"></div>
+  </div>
+  <svg style="display:none;">
+    <filter id="water-effect">
+      <feTurbulence id="turb" baseFrequency="0.02 0.03" numOctaves="2" seed="2" type="fractalNoise" result="turb"/>
+      <feDisplacementMap in2="turb" in="SourceGraphic" scale="20" xChannelSelector="R" yChannelSelector="G"/>
+    </filter>
+  </svg>
+  <script>
+    let audioBlob = null;
+    let recorder, chunks = [];
+    const recordBtn = document.getElementById('recordBtn');
+    const stopBtn = document.getElementById('stopBtn');
+    const audioPreview = document.getElementById('audioPreview');
+    const fileInput = document.getElementById('audioFile');
+    const resultDiv = document.getElementById('result');
+    const customFileBtn = document.getElementById('customFileBtn');
+    const fileNameSpan = document.getElementById('fileName');
+    const predictSimBtn = document.getElementById('predictSimBtn');
+    const predictEIGBtn = document.getElementById('predictEIGBtn');
+
+    recordBtn.onclick = async function(event) {
+      event && event.preventDefault && event.preventDefault();
+      chunks = [];
+      let stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      recorder = new MediaRecorder(stream);
+      recorder.ondataavailable = e => chunks.push(e.data);
+      recorder.onstop = e => {
+        audioBlob = new Blob(chunks, { type: 'audio/wav' });
+        audioPreview.src = URL.createObjectURL(audioBlob);
+        audioPreview.style.display = '';
+        fileInput.value = "";
+        fileNameSpan.textContent = "No file selected";
+      };
+      recorder.start();
+      recordBtn.disabled = true;
+      stopBtn.disabled = false;
+    }
+    stopBtn.onclick = function(event) {
+      event && event.preventDefault && event.preventDefault();
+      recorder.stop();
+      recordBtn.disabled = false;
+      stopBtn.disabled = true;
+    }
+    customFileBtn.onclick = function(event) {
+      event && event.preventDefault && event.preventDefault();
+      fileInput.click();
+    }
+    fileInput.onchange = function(event) {
+      event && event.preventDefault && event.preventDefault();
+      if (fileInput.files.length > 0) {
+        fileNameSpan.textContent = fileInput.files[0].name;
+        audioBlob = null;
+        audioPreview.style.display = 'none';
+      } else {
+        fileNameSpan.textContent = "No file selected";
+      }
+    }
+
+    predictSimBtn.onclick = async function(event) {
+      event && event.preventDefault && event.preventDefault();
+      resultDiv.innerHTML = "Analyzing similarity, please wait...";
+      let formData = new FormData();
+      if (fileInput.files.length > 0) {
+        formData.append('file', fileInput.files[0]);
+      } else if (audioBlob) {
+        formData.append('file', new File([audioBlob], "record.wav"));
+      } else {
+        resultDiv.textContent = "Please record or select an audio file first!";
+        return;
+      }
+      try {
+        const response = await fetch("http://127.0.0.1:5000/api/similarity", {
+          method: "POST",
+          body: formData
+        });
+        if (!response.ok) throw new Error("Server error");
+        const data = await response.json();
+        let html = `
+          <div class="voiceprint-box">
+            <div class="voiceprint-title">Voiceprint Top 3:</div>
+            <div class="voiceprint-list">
+              ${data.match.map(([id, score]) => `<div class="voiceprint-item">${id} <span>(Similarity: ${(score * 100).toFixed(1)}%)</span></div>`).join('')}
+            </div>
+          </div>
+        `;
+        resultDiv.innerHTML = html;
+      } catch(err) {
+        resultDiv.innerHTML = `<span style="color:#b71c1c;">Error: ${err.message}</span>`;
+      }
+    };
+
+    predictEIGBtn.onclick = async function(event) {
+      event && event.preventDefault && event.preventDefault();
+      resultDiv.innerHTML = "Analyzing emotion, intensity and gender, please wait...";
+      let formData = new FormData();
+      if (fileInput.files.length > 0) {
+        formData.append('file', fileInput.files[0]);
+      } else if (audioBlob) {
+        formData.append('file', new File([audioBlob], "record.wav"));
+      } else {
+        resultDiv.textContent = "Please record or select an audio file first!";
+        return;
+      }
+      try {
+        const response = await fetch("http://127.0.0.1:5000/api/eig", {
+          method: "POST",
+          body: formData
+        });
+        if (!response.ok) throw new Error("Server error");
+        const data = await response.json();
+        let html = `
+          <div class="voiceprint-box">
+            <div class="voiceprint-title" style="margin-bottom:12px;">Emotion, Intensity & Gender Result</div>
+            <div><span class="result-key">Emotion: </span><span class="emotion">${data.emotion}</span></div>
+            <div><span class="result-key">Intensity: </span><span class="intensity">${data.intensity}</span></div>
+            <div><span class="result-key">Gender: </span><span class="gender">${data.gender}</span></div>
+          </div>
+        `;
+        resultDiv.innerHTML = html;
+      } catch(err) {
+        resultDiv.innerHTML = `<span style="color:#b71c1c;">Error: ${err.message}</span>`;
+      }
+    };
+
+    VANTA.WAVES({
+      el: "#vanta-bg",
+      color: 0x364b6d,
+      shininess: 50,
+      waveHeight: 20,
+      waveSpeed: 0.5,
+      zoom: 1.2
+    });
+
+  </script>
+  
+</body>
+</html>
