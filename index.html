@@ -1,17 +1,21 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+  <!-- Load styles and fonts -->
   <meta charset="UTF-8">
   <title>VoicEmo</title>
   <link rel="stylesheet" href="style.css">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=DM+Mono:ital,wght@0,300;0,400;0,500;1,300;1,400;1,500&display=swap" rel="stylesheet">
+  <!-- Load 3D background dependencies -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r121/three.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/vanta@latest/dist/vanta.waves.min.js"></script>
 </head>
 <body>
+  <!-- 3D animated background -->
   <div id="vanta-bg" style="position:fixed;z-index:0;top:0;left:0;width:100vw;height:100vh;"></div>
+  <!-- Main application container -->
   <div class="main-card">
     <h2>VoicEmo</h2>
     <div class="center-desc">
@@ -19,25 +23,31 @@
       Instantly discover your celebrity match, emotions, and more!
     </div>
 
+    <!-- Audio recording controls -->
     <div class="section-gap">
       <button type="button" id="recordBtn" class="btn-custom">Start Recording</button>
       <button type="button" id="stopBtn" class="btn-custom" disabled>Stop Recording</button>
     </div>
     <audio id="audioPreview" controls style="display:none;" class="section-gap"></audio>
 
+    <!-- Audio file upload controls -->
     <div class="section-gap">
       <button type="button" id="customFileBtn" class="btn-custom">Select File</button>
       <input type="file" id="audioFile" accept="audio/*" style="display:none;">
       <span id="fileName">No file selected</span>
     </div>
 
+    <!-- Analysis control buttons -->
     <div class="section-gap">
       <button type="button" id="predictSimBtn" class="btn-custom">Predict Celebrity Similarity</button>
       <button type="button" id="predictEIGBtn" class="btn-custom">Predict Emotion, Intensity & Gender</button>
     </div>
+    <!-- Results display section -->
     <h3 class="result-title">Results</h3>
     <div id="result"></div>
   </div>
+
+  <!-- Water effect filter for visual effects -->
   <svg style="display:none;">
     <filter id="water-effect">
       <feTurbulence id="turb" baseFrequency="0.02 0.03" numOctaves="2" seed="2" type="fractalNoise" result="turb"/>
@@ -45,8 +55,10 @@
     </filter>
   </svg>
   <script>
+    // Global variables for audio handling
     let audioBlob = null;
     let recorder, chunks = [];
+    // DOM element references
     const recordBtn = document.getElementById('recordBtn');
     const stopBtn = document.getElementById('stopBtn');
     const audioPreview = document.getElementById('audioPreview');
@@ -57,6 +69,7 @@
     const predictSimBtn = document.getElementById('predictSimBtn');
     const predictEIGBtn = document.getElementById('predictEIGBtn');
 
+    // Audio recording handlers
     recordBtn.onclick = async function(event) {
       event && event.preventDefault && event.preventDefault();
       chunks = [];
@@ -80,6 +93,7 @@
       recordBtn.disabled = false;
       stopBtn.disabled = true;
     }
+    // File upload handlers
     customFileBtn.onclick = function(event) {
       event && event.preventDefault && event.preventDefault();
       fileInput.click();
@@ -94,7 +108,7 @@
         fileNameSpan.textContent = "No file selected";
       }
     }
-
+    // Similarity prediction API call
     predictSimBtn.onclick = async function(event) {
       event && event.preventDefault && event.preventDefault();
       resultDiv.innerHTML = "Analyzing similarity, please wait...";
@@ -128,6 +142,7 @@
       }
     };
 
+    // Emotion, Intensity & Gender prediction API call
     predictEIGBtn.onclick = async function(event) {
       event && event.preventDefault && event.preventDefault();
       resultDiv.innerHTML = "Analyzing emotion, intensity and gender, please wait...";
@@ -161,6 +176,7 @@
       }
     };
 
+    // Initialize 3D background
     VANTA.WAVES({
       el: "#vanta-bg",
       color: 0x364b6d,

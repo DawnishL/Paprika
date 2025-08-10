@@ -14,11 +14,13 @@ import pandas as pd
 import subprocess
 from speechbrain.pretrained import EncoderClassifier
 
+# Load pretrained speaker embeddings and metadata
 speaker_data = np.load("/speaker_embeddings.npz")
 speaker_ids = list(speaker_data.keys())
 embeds = np.array([speaker_data[sid].squeeze() for sid in speaker_ids])
 meta = pd.read_csv('/vox1_meta.csv', sep='\t')
 id2name = pd.Series(meta['VGGFace1 ID'].values, index=meta['VoxCeleb1 ID']).to_dict()
+# Initialize speaker recognition model
 classifier = EncoderClassifier.from_hparams(
     source="speechbrain/spkrec-ecapa-voxceleb",
     run_opts={"device": "cpu"}
@@ -49,11 +51,13 @@ def match_top3(audio_path):
         results.append([name, similarity])
     return results
 
+# Initialize emotion recognition model
 SAMPLE_RATE = 16000
 MODEL_NAME = "facebook/wav2vec2-base"
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 processor = Wav2Vec2Processor.from_pretrained(MODEL_NAME)
 w2v2_model = Wav2Vec2Model.from_pretrained(MODEL_NAME).to(device).eval()
+# Load label encoders for emotion, intensity and gender
 le_e = joblib.load("/le_emotion.pkl")
 le_i = joblib.load("/le_intensity.pkl")
 le_g = joblib.load("/le_gender.pkl")
@@ -137,6 +141,7 @@ def predict_audio(path, le_e, le_i, le_g):
         "gender": le_g.inverse_transform([pred_g])[0]
     }
 
+# Initialize Flask app with CORS support
 app = Flask(__name__)
 CORS(app)
 

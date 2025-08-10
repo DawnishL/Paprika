@@ -1,3 +1,4 @@
+/* Base styles and layout */
 html, body {
   margin: 0;
   padding: 0;
@@ -12,6 +13,7 @@ html, body {
   overflow-x: hidden;
 }
 
+/* Main container styles */
 .main-card {
   background: none !important;
   box-shadow: none !important;
@@ -29,6 +31,7 @@ html, body {
   z-index: 1;
 }
 
+/* Header and title styles */
 .main-card h2 {
   font-size: 5rem;
   font-weight: 700;
@@ -40,6 +43,7 @@ html, body {
   font-family: "DM Mono", monospace;
 }
 
+/* Description text styles */
 .subtitle {
   font-size: 0.86rem;
   font-weight: 400;
@@ -54,6 +58,7 @@ html, body {
   font-family: "DM Mono", monospace;  
 }
 
+/* Button section layout */
 .section-gap {
   display: flex;
   flex-direction: row;
@@ -63,6 +68,7 @@ html, body {
   width: 100%;
 }
 
+/* Custom button styles and animations */
 .btn-custom {
   display: inline-block;
   min-width: 120px;
@@ -117,6 +123,7 @@ html, body {
   align-self: center;
 }
 
+/* Audio player styling */
 #audioPreview {
   width: 76vw;
   max-width: 480px;
@@ -127,6 +134,7 @@ html, body {
   box-shadow: 0 3px 14px 0 #2228;
 }
 
+/* Results section styling */
 .result-title {
   font-size: 1.13rem;
   font-weight: 600;
@@ -146,6 +154,7 @@ html, body {
   font-size: 1.13rem;
 }
 
+/* Voice analysis results container */
 .voiceprint-box {
   background: rgba(36,38,62,0.52);
   padding: 24px 17px 16px 21px;
@@ -202,7 +211,7 @@ html, body {
   letter-spacing: 0.01em;
 }
 
-
+/* Analysis results text styling */
 .result-key { color: #b0c2ff; font-weight: 500; }
 .emotion, .intensity, .gender {
   color: #f4e8ff;
@@ -231,6 +240,7 @@ html, body {
   z-index: 2;
 }
 
+/* Responsive layout adjustments */
 .section-gap {
   display: flex;
   flex-direction: row;
