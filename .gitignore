@@ -1,0 +1,57 @@
+# ── macOS ─────────────────────────────────────────
+.DS_Store
+.AppleDouble
+._*
+
+# ── Python ────────────────────────────────────────
+__pycache__/
+*.py[cod]
+*.egg-info/
+.Python
+build/
+dist/
+
+# ── Virtual environments ──────────────────────────
+.venv/
+venv/
+env/
+ENV/
+
+# ── Jupyter ───────────────────────────────────────
+.ipynb_checkpoints/
+*/.ipynb_checkpoints/*
+
+# ── Model weights & large artifacts ───────────────
+# 通过 GitHub Releases 或 Hugging Face 分发，不要提交进 Git
+assets/
+*.pt
+*.pth
+*.ckpt
+*.npz
+*.pkl
+*.joblib
+*.h5
+
+# ── Datasets & audio ──────────────────────────────
+data/
+*.wav
+*.mp3
+*.m4a
+*.flac
+*.webm
+!docs/samples/*.wav          # 例外：README 里用到的示例音频可以留
+
+# ── Runtime temp files ────────────────────────────
+temp_*.wav
+*_fixed.wav
+*.log
+
+# ── IDE ───────────────────────────────────────────
+.vscode/
+.idea/
+*.swp
+
+# ── Secrets ───────────────────────────────────────
+.env
+.env.local
+*.key
