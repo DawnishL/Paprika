@@ -178,22 +178,14 @@ Both endpoints return `400` if no file is attached and `500` with an `error` fie
 
 ```
 Paprika/
-├── backend/
-│   ├── app.py              # Flask API — /api/eig, /api/similarity
-│   ├── model.py            # DeeperMultiTaskCNNClassifier
-│   └── config.py           # paths & runtime settings
-├── frontend/
-│   ├── index.html
-│   └── style.css
-├── notebooks/
-│   ├── 01_data_exploration.ipynb
-│   ├── 02_feature_extraction.ipynb
-│   ├── 03_model_training.ipynb
-│   └── 04_explainability.ipynb
-├── visualization_SER/      # evaluation plots & analysis
-├── docs/                   # UML, DFD, demo assets
-├── assets/                 # model weights (gitignored)
-└── requirements.txt
+├── app.py                  # Flask API — /api/eig, /api/similarity
+├── index.html              # frontend: upload / record UI
+├── style.css
+├── notebooks/              # feature extraction, training, XAI analysis
+├── visualization_SER/      # evaluation and explainability plots
+├── UML&DFD.pdf             # class diagram and data flow diagram
+├── requirements.txt
+└── assets/                 # model weights — download from Releases (gitignored)
 ```
 
 ---
