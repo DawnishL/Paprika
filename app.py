@@ -14,11 +14,14 @@ import pandas as pd
 import subprocess
 from speechbrain.pretrained import EncoderClassifier
 
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+ASSETS_DIR = os.path.join(BASE_DIR, "assets")
+
 # Load pretrained speaker embeddings and metadata
-speaker_data = np.load("/speaker_embeddings.npz")
+speaker_data = np.load(os.path.join(ASSETS_DIR, "speaker_embeddings.npz"))
 speaker_ids = list(speaker_data.keys())
 embeds = np.array([speaker_data[sid].squeeze() for sid in speaker_ids])
-meta = pd.read_csv('/vox1_meta.csv', sep='\t')
+meta = pd.read_csv(os.path.join(ASSETS_DIR, "vox1_meta.csv"), sep='\t')
 id2name = pd.Series(meta['VGGFace1 ID'].values, index=meta['VoxCeleb1 ID']).to_dict()
 # Initialize speaker recognition model
 classifier = EncoderClassifier.from_hparams(
@@ -58,9 +61,9 @@ device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 processor = Wav2Vec2Processor.from_pretrained(MODEL_NAME)
 w2v2_model = Wav2Vec2Model.from_pretrained(MODEL_NAME).to(device).eval()
 # Load label encoders for emotion, intensity and gender
-le_e = joblib.load("/le_emotion.pkl")
-le_i = joblib.load("/le_intensity.pkl")
-le_g = joblib.load("/le_gender.pkl")
+le_e = joblib.load(os.path.join(ASSETS_DIR, "le_emotion.pkl"))
+le_i = joblib.load(os.path.join(ASSETS_DIR, "le_intensity.pkl"))
+le_g = joblib.load(os.path.join(ASSETS_DIR, "le_gender.pkl"))
 
 class DeeperMultiTaskCNNClassifier(nn.Module):
     def __init__(self, emb_dim, n_emotion, n_intensity, n_gender, cnn_channels=128, kernel_size=5, hidden=256, dropout=0.4):
@@ -105,7 +108,7 @@ emotion_model = DeeperMultiTaskCNNClassifier(
     n_intensity=len(le_i.classes_),
     n_gender=len(le_g.classes_)
 ).to(device)
-emotion_model.load_state_dict(torch.load("w2v2_multitask_cnn_XAI_best.pt", map_location=device))
+emotion_model.load_state_dict(torch.load(os.path.join(ASSETS_DIR, "w2v2_multitask_cnn_XAI_best.pt"), map_location=device))
 emotion_model.eval()
 
 def safe_audio_to_wav(src_path):
