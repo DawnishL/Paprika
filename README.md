@@ -185,6 +185,7 @@ Paprika/
 ├── visualization_SER/      # evaluation and explainability plots
 ├── UML&DFD.pdf             # class diagram and data flow diagram
 ├── requirements.txt
+├── LICENSE
 └── assets/                 # model weights — download from Releases (gitignored)
 ```
 
