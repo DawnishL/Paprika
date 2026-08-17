@@ -186,7 +186,7 @@ Paprika/
 ├── UML&DFD.pdf             # class diagram and data flow diagram
 ├── requirements.txt
 ├── LICENSE
-└── assets/                 # model weights — download from Releases (gitignored)
+└── assets/                 # create this and place downloaded weights here (gitignored)
 ```
 
 ---
